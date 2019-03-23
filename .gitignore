@@ -2,3 +2,6 @@ _opam
 _build
 *.install
 .merlin
+.vscode
+_esy
+node_modules

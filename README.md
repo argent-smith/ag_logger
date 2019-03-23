@@ -1,4 +1,4 @@
-# ag_logs
+# ag_logger
 Simple logger based on Logs by Daniel Bünzli
 
 I've made it just to reuse in my own projects. Feel free to reuse it as well.

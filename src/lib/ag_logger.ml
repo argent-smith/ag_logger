@@ -1,16 +1,18 @@
 open Lwt
 
 type config = {
-    log_times: bool;
-    log_process: bool
+    log_times   : bool;
+    log_process : bool;
+    verbosity   : Logs.level option
   }
 
 type 'a log = ('a, unit) Logs.msgf -> unit Lwt.t
 
 module type LOG = sig
-  val info : 'a log
-  val warn : 'a log
-  val err : 'a log
+  val debug : 'a log
+  val info  : 'a log
+  val warn  : 'a log
+  val err   : 'a log
 end
 
 let logs_data_of_level l =
@@ -94,15 +96,16 @@ let reporter config =
 
 let setup config =
   Fmt_tty.setup_std_outputs ();
-  Logs.set_level @@ Some Logs.Info;
+  Logs.set_level @@ config.verbosity;
   Logs.set_reporter @@ reporter config
 
 let create ~source =
   let module Src_log = (val Logs.src_log source : Logs.LOG) in
   let module Log = struct
-      let info msgf = Src_log.info msgf |> return
-      and warn msgf = Src_log.warn msgf |> return
-      and err msgf = Src_log.err msgf |> return
+      let debug msgf = Src_log.debug msgf |> return
+      let info msgf  = Src_log.info msgf  |> return
+      and warn msgf  = Src_log.warn msgf  |> return
+      and err msgf   = Src_log.err msgf   |> return
     end
   in
   (module Log : LOG)
@@ -113,7 +116,6 @@ let docs = "LOGGING OPTIONS"
 
 let log_times =
   let doc = Arg.(info ~docs
-                      ~docv:"BOOL"
                       ~doc:"Whether to timestamp log messages."
                       ~env:(env_var "LOG_TIMES")
                       ["log-times"; "T"]) in
@@ -121,14 +123,15 @@ let log_times =
 
 let log_process =
   let doc = Arg.(info ~docs
-                      ~docv:"BOOL"
                       ~env:(env_var "LOG_PROCESS")
                       ~doc:"Whether to add process info (name & pid) to log messages."
                       ["log-process"; "P"]) in
   Arg.(value @@ flag doc)
 
+let verbosity = Logs_cli.level ~env:(Arg.env_var "LOG_VERBOSITY") ()
+
 let opts () =
-  let combine log_times log_process =
-    { log_times; log_process }
+  let combine log_times log_process verbosity =
+    { log_times; log_process; verbosity }
   in
-  Term.(const combine $ log_times $ log_process)
+  Term.(const combine $ log_times $ log_process $ verbosity)

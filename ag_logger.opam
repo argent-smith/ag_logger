@@ -1,8 +1,8 @@
 opam-version: "2.0"
 name: "ag_logger"
-synopsis: "Simple logger based on Logs by Daniel Bünzli"
-description: "Simple logger based on Logs by Daniel Bünzli"
-version: "0.0.1"
+synopsis: "Ag apps specific logger based on Logs by Daniel Bünzli"
+description: "Ag apps specific logger based on Logs by Daniel Bünzli"
+version: "~dev"
 maintainer: "Pavel Argentov <argentoff@gmail.com>"
 authors: "Pavel Argentov <argentoff@gmail.com>"
 license: "Unlicense"
@@ -16,10 +16,12 @@ build: [
 depends: [
   "ocaml" { >= "4.04" }
   "dune" { >= "1.1.1" }
-  "lwt"
-  "fmt"
-  "ptime"
-  "logs"
-  "cmdliner"
-  "merlin"
+  "lwt" {build}
+  "fmt" {build}
+  "ptime" {build}
+  "logs" {build}
+  "cmdliner" {build}
+  "merlin" {post}
+  "ocaml-lsp-server" {post}
+  "ocamlformat" {post}
 ]
