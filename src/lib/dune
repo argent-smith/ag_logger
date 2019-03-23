@@ -2,8 +2,11 @@
 
 (library
  (name ag_logger)
+ (public_name ag_logger)
  (wrapped false)
- (libraries cmdliner
+ (libraries lwt
+            lwt.unix
+            cmdliner
             ptime
             ptime.clock.os
             fmt
@@ -11,6 +14,5 @@
             logs
             logs.fmt
             logs.lwt)
- (preprocess (pps lwt_ppx))
  (flags (-safe-string))
  (ocamlopt_flags (-O2 -safe-string)))
