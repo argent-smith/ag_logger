@@ -1,8 +1,7 @@
 ;; -*- tuareg-dune -*-
 
 (library
- (name logger)
- (public_name ag_logger)
+ (name ag_logger)
  (wrapped false)
  (libraries cmdliner
             ptime
