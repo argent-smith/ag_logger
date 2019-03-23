@@ -22,4 +22,5 @@ depends: [
   "ptime"
   "logs"
   "cmdliner"
+  "merlin"
 ]
