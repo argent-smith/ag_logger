@@ -1,9 +1,6 @@
-;; -*- tuareg-dune -*-
-
 (library
  (name ag_logger)
  (public_name ag_logger)
- (wrapped false)
  (libraries lwt
             lwt.unix
             cmdliner
@@ -11,9 +8,7 @@
             ptime.clock.os
             fmt
             fmt.tty
-            logs
-            logs.fmt
-            logs.lwt
-            logs.cli)
+            logs)
  (flags (-safe-string))
+ (preprocess (pps ppx_jane))
  (ocamlopt_flags (-O2 -safe-string)))

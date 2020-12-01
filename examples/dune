@@ -1,0 +1,3 @@
+(executable
+ (name loggee)
+ (libraries cmdliner ag_logger lwt))
