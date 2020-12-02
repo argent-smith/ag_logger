@@ -1,11 +1,8 @@
-(** Logging facility *)
+(** The logging facility *)
 
-(** Logger configuration record *)
-type config = {
-    log_times   : bool;             (** Whether to add timestamps to the logs *)
-    log_process : bool;             (** Whether to add process info to the logs *)
-    verbosity   : Logs.level option (** Minimal log level (default: Logs.Info) *)
-  }
+
+module Config = Config
+module Cli = Cli
 
 (** Basic logging function type *)
 type 'a log = ('a, unit) Logs.msgf -> unit Lwt.t
@@ -19,10 +16,11 @@ module type LOG = sig
 end
 
 (** Sets up application-wide logging *)
-val setup : config -> unit
+val setup : Config.t -> unit
 
 (** Creates logger module for specified source *)
 val create : source:Logs.src -> (module LOG)
 
 (** Cli options function to be used in toplevel Cmdliner setup *)
-val opts : unit -> config Cmdliner.Term.t
+val opts : unit -> Config.t Cmdliner.Term.t
+[@@deprecated "Use Ag_logger.Cli.opts instead"]

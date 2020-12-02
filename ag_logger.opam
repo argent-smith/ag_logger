@@ -1,7 +1,7 @@
 opam-version: "2.0"
 name: "ag_logger"
-synopsis: "Ag apps specific logger based on Logs by Daniel Bünzli"
-description: "Ag apps specific logger based on Logs by Daniel Bünzli"
+synopsis: "Lwt logger based on Logs by Daniel Bünzli"
+description: "Custom Lwt logger with process/time based on Logs by Daniel Bünzli"
 version: "~dev"
 maintainer: "Pavel Argentov <argentoff@gmail.com>"
 authors: "Pavel Argentov <argentoff@gmail.com>"
@@ -16,6 +16,8 @@ build: [
 depends: [
   "ocaml" { >= "4.04" }
   "dune" { >= "1.1.1" }
+  "base" {build}
+  "ppx_jane" {build}
   "lwt" {build}
   "fmt" {build}
   "ptime" {build}

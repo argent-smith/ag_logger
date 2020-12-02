@@ -1,10 +1,8 @@
+open Base
 open Lwt
 
-type config = {
-    log_times   : bool;
-    log_process : bool;
-    verbosity   : Logs.level option
-  }
+module Config = Config
+module Cli = Cli
 
 type 'a log = ('a, unit) Logs.msgf -> unit Lwt.t
 
@@ -35,7 +33,7 @@ let pp_header ~pp_h ppf (cfg, l, h) =
   | _ ->
      pp_h cfg ppf style (match h with None -> abbr | Some h -> h)
 
-let pp_time config =
+let pp_time (config : Config.t) =
   let tz_offset_s = match Ptime_clock.current_tz_offset_s () with None -> 0 | Some s -> s in
   let formatter ppf time =
     Fmt.pf ppf "@[%a@ @]" (Ptime.pp_human ~tz_offset_s ()) time
@@ -44,9 +42,10 @@ let pp_time config =
   | true -> formatter
   | false -> Fmt.nop
 
-let pp_process config =
+let pp_process (config : Config.t) =
+  let open Caml in
   let pid = Unix.getpid ()
-  and exe = match Array.length Sys.argv with
+  and exe = match Array.length @@ Sys.argv with
     | 0 -> Filename.basename Sys.executable_name
     | n -> Filename.basename Sys.argv.(0)
   in
@@ -66,7 +65,7 @@ let pp_header =
   in
   pp_header ~pp_h
 
-let reporter config =
+let reporter (config : Config.t) =
   let buf_fmt ~like =
     let b = Buffer.create 512 in
     Fmt.with_buffer ~like b,
@@ -86,15 +85,16 @@ let reporter config =
       k ()
     in
     let formatter ?header ?tags fmt =
+      let open Caml in
       let k _ = over (); k () in
-      let ppf = if level = App then app else dst in
+      let ppf = if level = Logs.App then app else dst in
       Fmt.kpf k ppf ("%a @[%s@]: @[" ^^ fmt ^^ "@]@.") pp_header (config, level, header) (Logs.Src.name src)
     in
     msgf formatter
   in
   { Logs.report = report }
 
-let setup config =
+let setup (config : Config.t) =
   Fmt_tty.setup_std_outputs ();
   Logs.set_level @@ config.verbosity;
   Logs.set_reporter @@ reporter config
@@ -110,28 +110,4 @@ let create ~source =
   in
   (module Log : LOG)
 
-open Cmdliner
-
-let docs = "LOGGING OPTIONS"
-
-let log_times =
-  let doc = Arg.(info ~docs
-                      ~doc:"Whether to timestamp log messages."
-                      ~env:(env_var "LOG_TIMES")
-                      ["log-times"; "T"]) in
-  Arg.(value @@ flag doc)
-
-let log_process =
-  let doc = Arg.(info ~docs
-                      ~env:(env_var "LOG_PROCESS")
-                      ~doc:"Whether to add process info (name & pid) to log messages."
-                      ["log-process"; "P"]) in
-  Arg.(value @@ flag doc)
-
-let verbosity = Logs_cli.level ~env:(Arg.env_var "LOG_VERBOSITY") ()
-
-let opts () =
-  let combine log_times log_process verbosity =
-    { log_times; log_process; verbosity }
-  in
-  Term.(const combine $ log_times $ log_process $ verbosity)
+let opts = Cli.opts
