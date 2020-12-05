@@ -11,6 +11,7 @@ module type LOG = sig
   val info  : 'a log
   val warn  : 'a log
   val err   : 'a log
+  val app   : 'a log
 end
 
 let logs_data_of_level l =
@@ -103,9 +104,10 @@ let create ~source =
   let module Src_log = (val Logs.src_log source : Logs.LOG) in
   let module Log = struct
       let debug msgf = Src_log.debug msgf |> return
-      let info msgf  = Src_log.info msgf  |> return
-      and warn msgf  = Src_log.warn msgf  |> return
-      and err msgf   = Src_log.err msgf   |> return
+      and info  msgf = Src_log.info  msgf |> return
+      and warn  msgf = Src_log.warn  msgf |> return
+      and err   msgf = Src_log.err   msgf |> return
+      and app   msgf = Src_log.app   msgf |> return
     end
   in
   (module Log : LOG)

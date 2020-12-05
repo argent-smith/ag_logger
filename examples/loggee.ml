@@ -20,7 +20,8 @@ let main logger_config =
     Log.err (fun f -> f "Error log message");
     Log.info (fun f -> f "Info log message");
     Log.warn (fun f -> f "Warning log message");
-    Log.debug (fun f -> f "Debugging log message")
+    Log.debug (fun f -> f "Debugging log message");
+    Log.app (fun f -> f "Application log message");
   ] in
   join threads |> Lwt_main.run
 

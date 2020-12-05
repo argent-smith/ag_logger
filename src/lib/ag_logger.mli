@@ -13,6 +13,7 @@ module type LOG = sig
   val info  : 'a log
   val warn  : 'a log
   val err   : 'a log
+  val app   : 'a log
 end
 
 (** Sets up application-wide logging *)

@@ -26,4 +26,5 @@ depends: [
   "merlin" {post}
   "ocaml-lsp-server" {post}
   "ocamlformat" {post}
+  "utop" {post}
 ]
